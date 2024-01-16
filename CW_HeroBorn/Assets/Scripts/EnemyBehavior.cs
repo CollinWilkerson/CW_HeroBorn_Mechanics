@@ -4,15 +4,23 @@ using UnityEngine;
 
 public class EnemyBehavior : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    //triggers when a gameobject enters the sphere
+    void OnTriggerEnter(Collider other)
     {
-        
+        //checks game object name
+        if (other.name == "Player")
+        {
+            Debug.Log("Player detected - attack!");
+        }
     }
 
-    // Update is called once per frame
-    void Update()
+    //triggers when gameobject leaves the sphere
+    void OnTriggerExit(Collider other)
     {
-        
+        //does same thing as before
+        if (other.name == "Player")
+        {
+            Debug.Log("Player out of range, resume patrol");
+        }
     }
 }
