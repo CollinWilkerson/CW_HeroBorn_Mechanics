@@ -31,6 +31,8 @@ public class PlayerBehavior : MonoBehaviour
     private bool canJump = false;
     private bool shoot = false;
 
+    private GameBehavior _gameManager;
+
     void Start()
     {
         //returns the rigidbody on the player
@@ -38,6 +40,8 @@ public class PlayerBehavior : MonoBehaviour
 
         //returns the capsulecolider
         _col = GetComponent<CapsuleCollider>();
+
+        _gameManager = GameObject.Find("GameManager").GetComponent<GameBehavior>();
     }
 
     // Update is called once per frame
@@ -104,5 +108,13 @@ public class PlayerBehavior : MonoBehaviour
             shoot = false;
         }
     }
-    
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if(collision.gameObject.name == "Enemy")
+        {
+            _gameManager.HP -= 1;
+        }
+    }
+
 }

@@ -6,6 +6,7 @@ using UnityEngine.SceneManagement;
 public class GameBehavior : MonoBehaviour
 {
     public bool showWinScreen = false;
+    public bool showLossScreen = false;
 
     public string labelText = "Collect all 4 items and win your freedom!";
     public int maxItems = 4;
@@ -21,11 +22,7 @@ public class GameBehavior : MonoBehaviour
             Debug.LogFormat("Items: {0}", _itemsCollected);
             if(_itemsCollected >= maxItems)
             {
-                labelText = "You've found all the items!";
-                showWinScreen = true;
-
-                //stops the game
-                Time.timeScale = 0f;
+                endGame(true);
             }
             else
             {
@@ -41,6 +38,39 @@ public class GameBehavior : MonoBehaviour
         {
             _playerHP = value;
             Debug.LogFormat("Lives: {0}", _playerHP);
+            if (_playerHP <= 0)
+            {
+                endGame(false);
+            }
+            else
+            {
+                labelText = "AHHH!!! MY BONES!!!";
+            }
+        }
+    }
+    private void RestartLevel()
+    {
+        //Resets the scene
+        SceneManager.LoadScene(0);
+
+        //resets the time
+        Time.timeScale = 1.0f;
+    }
+    private void endGame(bool win)
+    {
+        if (win)
+        {
+            labelText = "You've found all the items!";
+            showWinScreen = true;
+
+            //stops the game
+            Time.timeScale = 0f;
+        }
+        else
+        {
+            labelText = "You wnat another life with that?";
+            showLossScreen = true;
+            Time.timeScale = 0;
         }
     }
     private void OnGUI()
@@ -52,11 +82,14 @@ public class GameBehavior : MonoBehaviour
         {
             if (GUI.Button(new Rect(Screen.width / 2 - 100, Screen.height / 2 - 50, 200, 100), "YOU WON!"))
             {
-                //Resets the scene
-                SceneManager.LoadScene(0);
-
-                //resets the time
-                Time.timeScale = 1.0f;
+                RestartLevel();
+            }
+        }
+        if (showLossScreen)
+        {
+            if (GUI.Button(new Rect(Screen.width / 2 - 100, Screen.height / 2 - 50, 200, 100), "You lose"))
+            {
+                RestartLevel();
             }
         }
     }
