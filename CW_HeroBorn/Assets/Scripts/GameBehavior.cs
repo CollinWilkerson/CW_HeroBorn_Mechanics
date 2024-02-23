@@ -2,9 +2,18 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using CustomExtensions;
 
-public class GameBehavior : MonoBehaviour
+//gambehavior inherits from monobehavior and IManager. GameBehavior must have the IManager elements to compile
+public class GameBehavior : MonoBehaviour, IManager
 {
+    private string _state;
+
+    public string State
+    {
+        get {return _state;}
+        set {_state = value;}
+    }
     public bool showWinScreen = false;
     public bool showLossScreen = false;
 
@@ -48,14 +57,19 @@ public class GameBehavior : MonoBehaviour
             }
         }
     }
-    private void RestartLevel()
+    void Start()
     {
-        //Resets the scene
-        SceneManager.LoadScene(0);
-
-        //resets the time
-        Time.timeScale = 1.0f;
+        Initialize();
     }
+
+    public void Initialize()
+    {
+        _state = "Manager initializedd...";
+        Debug.Log(_state);
+
+        _state.FancyDebug();
+    }
+
     private void endGame(bool win)
     {
         if (win)
@@ -82,14 +96,15 @@ public class GameBehavior : MonoBehaviour
         {
             if (GUI.Button(new Rect(Screen.width / 2 - 100, Screen.height / 2 - 50, 200, 100), "YOU WON!"))
             {
-                RestartLevel();
+                //calling our static class
+                Utilities.RestartLevel(0);
             }
         }
         if (showLossScreen)
         {
             if (GUI.Button(new Rect(Screen.width / 2 - 100, Screen.height / 2 - 50, 200, 100), "You lose"))
             {
-                RestartLevel();
+                Utilities.RestartLevel();
             }
         }
     }
