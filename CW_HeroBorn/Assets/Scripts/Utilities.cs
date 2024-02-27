@@ -28,6 +28,10 @@ public static class Utilities
     }
     public static bool RestartLevel(int SceneIndex)
     {
+        if(SceneIndex < 0)
+        {
+            throw new System.ArgumentException("Scene index cannot be negative");
+        }
         SceneManager.LoadScene(SceneIndex);
         Time.timeScale = 1.0f;
 

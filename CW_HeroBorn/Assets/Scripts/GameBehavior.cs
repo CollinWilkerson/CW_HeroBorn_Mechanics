@@ -16,6 +16,8 @@ public class GameBehavior : MonoBehaviour, IManager
     }
     public bool showWinScreen = false;
     public bool showLossScreen = false;
+    //it is best practice to initalize stacks with the type they are holding
+    public Stack<string> lootStack = new Stack<string>();
 
     public string labelText = "Collect all 4 items and win your freedom!";
     public int maxItems = 4;
@@ -57,19 +59,56 @@ public class GameBehavior : MonoBehaviour, IManager
             }
         }
     }
+    public delegate void DebugDelegate(string newText);
+
+    public DebugDelegate debug = Print;
     void Start()
     {
         Initialize();
+        //initializing the generic we made
+        InventoryList<string> inventoryList = new InventoryList<string>();
+        //calling the generic function
+        inventoryList.SetItem("Potion");
+        Debug.Log(inventoryList.item);
     }
 
     public void Initialize()
     {
-        _state = "Manager initializedd...";
-        Debug.Log(_state);
+        _state = "Manager initialized...";
 
         _state.FancyDebug();
+
+        debug(_state);
+
+        LogWithDelegate(debug);
+        //adds to the top of the stack
+        lootStack.Push("Sword of Doom");
+        lootStack.Push("HP+");
+        lootStack.Push("Golden Key");
+        lootStack.Push("Winged Boot");
+        lootStack.Push("Mythril Bracers");
+        //gets the player
+        GameObject player = GameObject.Find("Player");
+        PlayerBehavior playerBehavior = player.GetComponent<PlayerBehavior>();
+        //subscribes? player jump to handle player jump
+        playerBehavior.playerJump += HandlePlayerJump;
     }
 
+    public void HandlePlayerJump()
+    {
+        debug("Player has jumped...");
+
+    }
+
+    public static void Print(string newText)
+    {
+        Debug.Log(newText);
+    }
+
+    public void LogWithDelegate(DebugDelegate del)
+    {
+        del("Delegating the debug task...");
+    }
     private void endGame(bool win)
     {
         if (win)
@@ -104,8 +143,39 @@ public class GameBehavior : MonoBehaviour, IManager
         {
             if (GUI.Button(new Rect(Screen.width / 2 - 100, Screen.height / 2 - 50, 200, 100), "You lose"))
             {
-                Utilities.RestartLevel();
+                //runs first
+                try
+                {
+                    Utilities.RestartLevel(-1);
+                    debug("Level restarted successfully...");
+                }
+                //runs on error
+                catch (System.ArgumentException e)
+                {
+                    // 3
+                    Utilities.RestartLevel(0);
+                    debug("Reverting to scene 0: " +
+                    e.ToString());
+                }
+                //runs
+                finally
+                {
+                    debug("Restart handled...");
+                }
+
             }
         }
+    }
+
+    public void PrintLootReport()
+    {
+        //removes item from the top of the stack and returns it
+        var currentItem = lootStack.Pop();
+        //returns item from the stack without removing it.
+        var nextItem = lootStack.Peek();
+
+        Debug.LogFormat("You got a {0}! You've got a good chance of finding a {1} next!", currentItem, nextItem);
+
+        Debug.LogFormat("There are {0} random loot items waiting for you!", lootStack.Count);
     }
 }

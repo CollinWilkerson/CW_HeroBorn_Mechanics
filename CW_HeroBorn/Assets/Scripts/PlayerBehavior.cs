@@ -33,6 +33,9 @@ public class PlayerBehavior : MonoBehaviour
 
     private GameBehavior _gameManager;
 
+    public delegate void JumpingEvent();
+    public event JumpingEvent playerJump;
+
     void Start()
     {
         //returns the rigidbody on the player
@@ -83,6 +86,8 @@ public class PlayerBehavior : MonoBehaviour
         {
             _rb.AddForce(Vector3.up * jumpVelocity, ForceMode.Impulse);
             canJump = false;
+
+            playerJump();
         }
 
         //creates a rotational vector. Vector3.up is (0,1,0) as we want to rotate around the y axis. the hInput contains the magnitude and the direction around the y axis we rotate.

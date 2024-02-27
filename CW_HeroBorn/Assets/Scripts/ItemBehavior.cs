@@ -26,6 +26,8 @@ public class ItemBehavior : MonoBehaviour
 
             //increments the variable in GameBehavior
             gameManager.Items += 1;
+
+            gameManager.PrintLootReport();
         }
     }
 }
